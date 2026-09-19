@@ -16,8 +16,14 @@ def binarize(
         blurred_gray_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
     gray_image = blurred_gray_image if reduce_noise else gray_image
     threshold_type = cv2.THRESH_BINARY
+    # ordinary thresholding
     _, binarized_image = cv2.threshold(gray_image, threshold, 255, threshold_type)
-
+    # adaptive thresholding
+    # binarized_image=cv2.adaptiveThreshold(gray_image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
+    #         cv2.THRESH_BINARY,11,2) # finds both contours: inner and outer (somehow)
+    # binarized_image = cv2.adaptiveThreshold(
+    #    gray_image, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 5, 2
+    #) # not completely bad, but not stable if Sun is on the back fully
     if debug:
         cv2.imshow(f"{prefix} gray_image (reduce_noise={reduce_noise})", gray_image)
         _draw_histogram_for_gray_image(prefix, gray_image, threshold)
