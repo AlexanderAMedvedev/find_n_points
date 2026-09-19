@@ -1,0 +1,8 @@
+# produced by the example app
+debug.output
+
+# Python related
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
