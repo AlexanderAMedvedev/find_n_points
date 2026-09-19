@@ -83,14 +83,14 @@ def main() -> None:
                     file_path=DEBUG_DATA_FILENAME,
                     debug=DEBUG,
                 )
-            )  #
+            )  # +
             display = find_n_points.draw_final_contours_and_approximating_hulls(
                 frame,
                 top_holes,
                 ordered_hulls,
                 camera_matrix_coordinates_of_virtual_angles,
                 debug=DEBUG,
-            )  #
+            )  # +
         cv2.imshow(f"{prefix}", frame if display is None else display)
         if cv2.waitKey(1) == ord("q"):
             break
