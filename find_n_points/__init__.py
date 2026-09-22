@@ -14,3 +14,4 @@ from find_n_points.do_canny_edge_detection import (
 )
 from find_n_points.order_two_holes import order_two_hulls
 from find_n_points.center_of import center_of
+from find_n_points.find_n_points_pipeline import find_n_points_pipeline
