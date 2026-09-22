@@ -6,7 +6,7 @@ from find_n_points.center_of import center_of
 
 
 def find_two_top_holes(
-    input_holes: cv2.Mat[cv2.Mat] | None,
+    input_holes: cv2.Mat[cv2.Mat],
     min_center_y_upper_by_lower_hole_ratio: float,
     file_path: Path,
     debug: bool = False,
@@ -14,8 +14,8 @@ def find_two_top_holes(
 
     prefix = "fun:find_two_top_holes"
 
-    if input_holes is None or len(input_holes) <= 1:
-        return
+    if len(input_holes) <= 1:
+        return None
 
     two_top_holes = sorted(input_holes, key=lambda hole: center_of(hole)[1])[:2]
     # keep in mind, that the OY axis grows from up to down

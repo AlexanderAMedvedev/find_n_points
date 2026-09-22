@@ -6,8 +6,8 @@ from find_n_points.approximate_two_back_holes import approximate_two_back_holes
 from find_n_points.order_virtual_angles_coordinates_for_two_back_holes import (
     order_virtual_angles_coordinates_for_two_back_hulls,
 )
-from find_n_points.draw_final_contours_and_approximating_hulls import (
-    draw_final_contours_and_approximating_hulls,
+from find_n_points.draw_result import (
+    draw_result,
 )
 from find_n_points.do_canny_edge_detection import (
     do_canny_edge_detection_not_fully_ready,

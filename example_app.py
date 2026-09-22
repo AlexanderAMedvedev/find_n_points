@@ -1,5 +1,4 @@
-from cv_shared.video_source import load_video_source, open_video_capture
-import cv_shared.append_value_to_file
+import cv_shared
 from pathlib import Path
 import find_n_points
 import cv2
@@ -10,22 +9,27 @@ CONFIG_PATH = (
 DEFAULT_VIDEO_SOURCE = 0
 MAX_READ_FAILURES = 30
 DEBUG = True
+DEBUG_FILEPATH = "debug.output"
 USE_CANNY_EDGE_DETECTOR = False  # True to be investigated
+REDUCE_NOISE = True
+BINARIZE_THRESHOLD = 48
+MIN_AREA_PIXELS = 500
+MIN_SOLIDITY = 0.95
+MAX_SOLIDITY = 0.995
 
 
 def main() -> None:
     prefix = "main"
     read_failures = 0
-    cap = open_video_capture(load_video_source(CONFIG_PATH, DEFAULT_VIDEO_SOURCE))
+    cap = cv_shared.open_video_capture(cv_shared.load_video_source(CONFIG_PATH, DEFAULT_VIDEO_SOURCE))
     if DEBUG:
-        DEBUG_DATA_FILENAME = "debug.output"
-        open(DEBUG_DATA_FILENAME, "w").close()
+        open(DEBUG_FILEPATH, "w").close()
 
     while True:
         display = None
-        ret, frame = cap.read()
+        isOk, frame = cap.read()
 
-        if not ret:
+        if not isOk:
             read_failures += 1
             if read_failures >= MAX_READ_FAILURES:
                 print("Поток не отдаёт кадры, останавливаю захват")
@@ -38,60 +42,27 @@ def main() -> None:
         else:
             read_failures = 0
 
-        cv_shared.append_value_to_file("---next frame---", DEBUG_DATA_FILENAME)
-        gray = find_n_points.convert_to_gray(frame, debug=DEBUG)  # +
-        bin = None
-        if USE_CANNY_EDGE_DETECTOR:
-            bin = find_n_points.do_canny_edge_detection_not_fully_ready(
-                gray,
-                threshold_1=50,
-                threshold_2=100,
-                reduce_noise=True,
+        cv_shared.append_value_to_file("---next frame---", DEBUG_FILEPATH)
+        camera_matrix_coordinates_of_virtual_angles, top_holes, ordered_hulls = (
+            find_n_points.find_n_points_pipeline(
+                frame=frame,
                 debug=DEBUG,
-            )  #
-        else:
-            bin = find_n_points.binarize(
-                gray,
-                threshold=64,
-                reduce_noise=True,
-                file_path=DEBUG_DATA_FILENAME,
-                debug=DEBUG,
-            )  # +
-
-        contours = find_n_points.find_holes_contours(
-            bin,
-            min_area_pixels=1000,
-            min_solidity=0.95,
-            max_solidity=0.995,  # in order to exclude real hulls in the environment
-            debug=DEBUG,
-            file_path=DEBUG_DATA_FILENAME,
-        )  # +
-        top_holes = find_n_points.find_two_top_holes(
-            contours,
-            # to be estimated at the closest distance for the largest deviation angle (0.71?)
-            min_center_y_upper_by_lower_hole_ratio=0.71,
-            file_path=DEBUG_DATA_FILENAME,
-            debug=DEBUG,
-        )  # +
-        if (top_holes is not None) and len(top_holes) == 2:
-            two_top_hulls = find_n_points.approximate_two_back_holes(top_holes)  # +
-            ordered_hulls = find_n_points.order_two_hulls(two_top_hulls)  # +
-            camera_matrix_coordinates_of_virtual_angles = (
-                find_n_points.order_virtual_angles_coordinates_for_two_back_hulls(
-                    left_hull=ordered_hulls.hole_hull_one,
-                    right_hull=ordered_hulls.hole_hull_two,
-                    file_path=DEBUG_DATA_FILENAME,
-                    debug=DEBUG,
-                )
-            )  # +
-            display = find_n_points.draw_final_contours_and_approximating_hulls(
-                frame,
-                top_holes,
-                ordered_hulls,
-                camera_matrix_coordinates_of_virtual_angles,
-                debug=DEBUG,
-            )  # +
-        cv2.imshow(f"{prefix}", frame if display is None else display)
+                debug_filepath=DEBUG_FILEPATH,
+                use_canny_edge_detector=USE_CANNY_EDGE_DETECTOR,
+                reduce_noise=REDUCE_NOISE,
+                binarize_threshold=BINARIZE_THRESHOLD,
+                min_area_pixels=MIN_AREA_PIXELS,
+                min_solidity=MIN_SOLIDITY,
+                max_solidity=MAX_SOLIDITY,
+            )
+        )  #+
+        display = find_n_points.draw_result(
+            frame,
+            top_holes,
+            ordered_hulls,
+            camera_matrix_coordinates_of_virtual_angles,
+        )  #+
+        cv2.imshow(f"{prefix}", display)
         if cv2.waitKey(1) == ord("q"):
             break
 
