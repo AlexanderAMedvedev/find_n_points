@@ -1,11 +1,11 @@
 [project]
 name = "find_n_points"
-version = "0.3.0"
+version = "0.3.1"
 description = ""
 requires-python = ">=3.11"
 dependencies = [
     "opencv-python",
-    "cv_shared @ git+https://github.com/AlexanderAMedvedev/cv_shared.git@0.3.0",
+    "cv_shared @ git+https://github.com/AlexanderAMedvedev/cv_shared.git@0.4.0",
 ]
 
 [project.optional-dependencies]

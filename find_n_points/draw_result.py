@@ -1,4 +1,5 @@
 import cv2
+import cv_shared
 
 
 def draw_result(
@@ -9,11 +10,13 @@ def draw_result(
 ) -> cv2.Mat:
     left_top = (50, 100)
     center = (800, 600)
-    display = _put_on_frame(
+    text_color = (0, 0, 255)
+    display = cv_shared.put_on_frame(
         "Look after:\n\
             1 - green filled area for holes\n\
             2 - blue lines for hulls\n\
             3 - red ordered 1-8 numbers for angles",
+        text_color,
         input_frame,
         left_top,
     )
@@ -23,13 +26,14 @@ def draw_result(
         and (hulls_approximating_holes is None)
         and (hulls_angles_coordinates is None)
     ):
-        display = _put_on_frame(
+        display = cv_shared.put_on_frame(
             "NOTHING IS FOUND",
+            text_color,
             display,
             center,
         )
         return display
-    
+
     holes_contours_color = (0, 255, 0)
     holes_approximating_hulls_color = (255, 0, 0)
     holes_approximating_hulls_thickness = 2
@@ -53,31 +57,11 @@ def draw_result(
         # assign angles of the left hole and right hole
         i = 1
         for point in hulls_angles_coordinates:
-            display = _put_on_frame(
+            display = cv_shared.put_on_frame(
                 str(i),
+                text_color,
                 display,
                 point,
             )
             i += 1
     return display
-
-
-def _put_on_frame(
-    text: str,
-    display: cv2.Mat,
-    position: tuple[int, int],
-) -> cv2.Mat:
-    text_font = cv2.FONT_HERSHEY_SIMPLEX
-    text_font_thickness = 1
-    text_font_scale = 1
-    text_color = (0, 0, 255)  # i.e. Red
-    return cv2.putText(
-        display,
-        text,
-        position,
-        text_font,
-        text_font_scale,
-        text_color,
-        text_font_thickness,
-        cv2.LINE_4,
-    )
