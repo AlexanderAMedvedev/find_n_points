@@ -1,3 +1,7 @@
+# [0.4.0]
+* added the parameter MIN_CENTER_Y_UPPER_BY_LOWER_HOLE_RATIO (min=0.71)
+*
+
 # [0.3.1]
 * refactored to use put_on_frame function from cv_shared
 

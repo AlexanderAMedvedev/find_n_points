@@ -12,16 +12,19 @@ DEBUG = True
 DEBUG_FILEPATH = "debug.output"
 USE_CANNY_EDGE_DETECTOR = False  # True to be investigated
 REDUCE_NOISE = True
-BINARIZE_THRESHOLD = 48
+BINARIZE_THRESHOLD = 32
 MIN_AREA_PIXELS = 500
 MIN_SOLIDITY = 0.95
 MAX_SOLIDITY = 0.995
+MIN_CENTER_Y_UPPER_BY_LOWER_HOLE_RATIO = 0.9
 
 
 def main() -> None:
     prefix = "main"
     read_failures = 0
-    cap = cv_shared.open_video_capture(cv_shared.load_video_source(CONFIG_PATH, DEFAULT_VIDEO_SOURCE))
+    cap = cv_shared.open_video_capture(
+        cv_shared.load_video_source(CONFIG_PATH, DEFAULT_VIDEO_SOURCE)
+    )
     if DEBUG:
         open(DEBUG_FILEPATH, "w").close()
 
@@ -54,14 +57,15 @@ def main() -> None:
                 min_area_pixels=MIN_AREA_PIXELS,
                 min_solidity=MIN_SOLIDITY,
                 max_solidity=MAX_SOLIDITY,
+                min_center_y_upper_by_lower_hole_ratio=MIN_CENTER_Y_UPPER_BY_LOWER_HOLE_RATIO,
             )
-        )  #+
+        )  # +
         display = find_n_points.draw_result(
             frame,
             top_holes,
             ordered_hulls,
             camera_matrix_coordinates_of_virtual_angles,
-        )  #+
+        )  # +
         cv2.imshow(f"{prefix}", display)
         if cv2.waitKey(1) == ord("q"):
             break

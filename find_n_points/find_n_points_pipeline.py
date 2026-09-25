@@ -23,6 +23,7 @@ def find_n_points_pipeline(
     min_area_pixels: int,
     min_solidity: float,
     max_solidity: float,
+    min_center_y_upper_by_lower_hole_ratio: float,
 ) -> tuple[list | None, list[cv2.Mat], list[cv2.Mat]] | tuple[None, None, None]:
     result_none_tuple = (None, None, None)
     gray = convert_to_gray(frame, debug)  # +
@@ -59,7 +60,7 @@ def find_n_points_pipeline(
     top_holes = find_two_top_holes(
         contours,
         # to be estimated at the closest distance for the largest deviation angle
-        min_center_y_upper_by_lower_hole_ratio=0.71,
+        min_center_y_upper_by_lower_hole_ratio=min_center_y_upper_by_lower_hole_ratio,
         file_path=debug_filepath,
         debug=debug,
     )  # +
